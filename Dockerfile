@@ -5,4 +5,4 @@ FROM php:8.1-fpm-alpine
 WORKDIR /var/www/html
 
 # Copy the application code from your local machine into the container
-COPY ./app .
+COPY ./app /app

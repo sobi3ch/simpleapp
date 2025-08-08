@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  default.conf: |
+    server {
+      listen 80;
+      index index.php index.html;
+      root /var/www/html;
+
+      location / {
+        try_files $uri $uri/ /index.php?$args;
+      }
+
+      location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000; # NOTE: The change to localhost
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      }
+    }
