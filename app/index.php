@@ -1,6 +1,19 @@
 <?php
 // app/index.php
+require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/url_helpers.php';
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Processor\WebProcessor;
+
+// Setup logger
+$logger = new Logger('app');
+$handler = new StreamHandler('php://stdout', Logger::INFO);
+$handler->setFormatter(new JsonFormatter());
+$logger->pushHandler($handler);
+$logger->pushProcessor(new WebProcessor());
 
 // Get the requested URL path
 $request_uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -8,6 +21,10 @@ $request_uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 // Your custom routing function
 function request($path)
 {
+    global $logger;
+
+    $logger->info('Page request', ['path' => $path]);
+
     switch ($path) {
         case 'about/me':
             handleAboutMe();
