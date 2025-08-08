@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-web-app
+  labels:
+    app: web-app
+spec:
+  volumes:
+    - name: app-code
+      emptyDir: {}
+    - name: nginx-conf
+      configMap:
+        name: nginx-conf
+        items:
+          - key: default.conf
+            path: default.conf
+  initContainers:
+    - name: copy-app-code
+      image: busybox:latest
+      command: [
+          "sh",
+          "-c",
+          "wget -O /tmp/index.php https://your-code-repository/index.php && cp /tmp/index.php /var/www/html/",
+        ] # Replace this with your own code source
+      volumeMounts:
+        - name: app-code
+          mountPath: /var/www/html
+  containers:
+    - name: nginx
+      image: nginx:stable-alpine
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: app-code
+          mountPath: /var/www/html
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d
+
+    - name: php-fpm
+      image: php:8.1-fpm-alpine
+      volumeMounts:
+        - name: app-code
+          mountPath: /var/www/html
