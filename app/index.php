@@ -35,6 +35,11 @@ function request($path)
         case '': // For the homepage (e.g., localhost/)
             handleHomepage();
             break;
+        case 'healthz':
+            // Health check endpoint
+            http_response_code(200);
+            echo "OK";
+            return;
         default:
             handle404();
             break;
