@@ -7,10 +7,11 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Processor\WebProcessor;
+use Monolog\Level;
 
 // Setup logger
 $logger = new Logger('app');
-$handler = new StreamHandler('php://stdout', Logger::INFO);
+$handler = new StreamHandler('php://stdout', Level::Info);
 $handler->setFormatter(new JsonFormatter());
 $logger->pushHandler($handler);
 $logger->pushProcessor(new WebProcessor());
@@ -23,26 +24,41 @@ function request($path)
 {
     global $logger;
 
-    $logger->info('Page request', ['path' => $path]);
+    $e404 = false;
 
     switch ($path) {
-        case 'about/me':
-            handleAboutMe();
-            break;
-        case 'contact':
-            handleContactPage();
-            break;
         case '': // For the homepage (e.g., localhost/)
             handleHomepage();
             break;
+
+        case 'about/me':
+            handleAboutMe();
+            break;
+
+        case 'contact':
+            handleContactPage();
+            break;
+
         case 'healthz':
             // Health check endpoint
-            http_response_code(200);
             echo "OK";
-            return;
+            break;
+
         default:
             handle404();
+            $e404 = true;
             break;
+    }
+
+
+    // If a 404 error occurred, we can log it here
+    if ($e404) {
+        http_response_code(404);
+        $logger->error('404 Not Found', ['path' => $path]);
+    } else {
+        // Log successful page requests
+        http_response_code(200);
+        $logger->info('Page served successfully', ['path' => $path]);
     }
 
     // none braking line
