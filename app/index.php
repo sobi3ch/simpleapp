@@ -51,7 +51,7 @@ function request($path)
     }
 
 
-    // If a 404 error occurred, we can log it here
+    // Handle 404 page
     if ($e404) {
         http_response_code(404);
         $logger->error('404 Not Found', ['path' => $path]);
@@ -63,7 +63,8 @@ function request($path)
 
     // none braking line
     echo "<hr />\n";
-    url();
+    url_schema();
+    downward_api_info();
 }
 
 

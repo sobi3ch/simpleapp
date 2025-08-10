@@ -5,7 +5,10 @@ function p($msg)
     echo "$msg<br />\n";
 }
 
-function url()
+/**
+ * Print URL schema information.
+ */
+function url_schema()
 {
     p("URL:");
     p("<ul>");
@@ -45,4 +48,64 @@ function url()
         echo "\nParsed Query String:\n";
         print_r($params);
     }
+}
+
+
+function downward_api_info()
+{
+    echo "<h2>Downward API Information</h2>";
+
+    $info = [
+        'pod_name' => getenv('POD_NAME') ?? 'N/A',
+        'pod_namespace' => getenv('POD_NAMESPACE') ?? 'N/A',
+        'pod_ip' => getenv('POD_IP') ?? 'N/A',
+        'node_name' => getenv('NODE_NAME') ?? 'N/A',
+        'pod_service_account' => getenv('POD_SERVICE_ACCOUNT') ?? 'N/A',
+    ];
+
+    $info['annotations'] = parsePodInfoFile('/etc/podinfo/annotations');
+    $info['labels']      = parsePodInfoFile('/etc/podinfo/labels');
+
+    echo "<pre>";
+    print_r($info);
+    echo "</pre>";
+}
+
+function parsePodInfoFile(string $filePath): array
+{
+    // Check if the file exists and is readable
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        // Return an empty array or throw an exception if the file isn't accessible
+        return [];
+    }
+
+    // Read the entire file content into a string
+    $fileContent = file_get_contents($filePath);
+
+    // Split the content by newline characters into an array of lines
+    $lines = explode("\n", $fileContent);
+
+    $result = [];
+    foreach ($lines as $line) {
+        // Skip empty lines
+        $trimmedLine = trim($line);
+        if (empty($trimmedLine)) {
+            continue;
+        }
+
+        // Split each line at the first '=' to separate the key and value
+        // The limit parameter ensures that only the first '=' is used for splitting
+        $parts = explode("=", $trimmedLine, 2);
+
+        // A valid line should have a key and a value
+        if (count($parts) === 2) {
+            $key = trim($parts[0]);
+            $value = trim($parts[1], '"'); // Remove surrounding quotes from the value
+
+            // Add the key-value pair to the result array
+            $result[$key] = $value;
+        }
+    }
+
+    return $result;
 }
