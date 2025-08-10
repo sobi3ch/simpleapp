@@ -86,6 +86,17 @@ spec:
             postStart:
               exec:
                 command: ["/bin/sh", "-c", "cp -r /app/. /var/www/html"]
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 6
+            periodSeconds: 5
           resources:
             limits:
               cpu: "100m"

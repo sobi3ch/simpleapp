@@ -56,9 +56,14 @@ function request($path)
         http_response_code(404);
         $logger->error('404 Not Found', ['path' => $path]);
     } else {
+        // if not path healthz
+        if ($path !== 'healthz') {
+            // Log the request
+            $logger->info('Page requested', ['path' => $path]);
+        }
+
         // Log successful page requests
         http_response_code(200);
-        $logger->info('Page served successfully', ['path' => $path]);
     }
 
     // none braking line
