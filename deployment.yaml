@@ -51,6 +51,17 @@ spec:
               mountPath: /var/www/html
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 6
+            periodSeconds: 5
           resources:
             limits:
               cpu: "100m"
