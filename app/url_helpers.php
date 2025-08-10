@@ -10,28 +10,21 @@ function p($msg)
  */
 function url_schema()
 {
-    p("URL:");
-    p("<ul>");
+    echo "<h3>URL schema information</h3>";
 
-    $server_software = $_SERVER['SERVER_SOFTWARE'] ?? 'N/A';
-    p("<li>Server Software: <b>$server_software</b></li>");
+    $info = [
+        'PHP Version' => phpversion(),
+        'Server Software' => $_SERVER['SERVER_SOFTWARE'] ?? 'N/A',
+        'Server Protocol' => $_SERVER['SERVER_PROTOCOL'] ?? 'N/A',
+        'Scheme' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
+        'Port' => $_SERVER['SERVER_PORT'] ?? 'N/A',
+        'Path' => $_SERVER['REQUEST_URI'] ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : 'N/A',
+        'Query String' => $_SERVER['QUERY_STRING'] ?? 'N/A',
+    ];
 
-    $server_protocol = $_SERVER['SERVER_PROTOCOL'] ?? 'N/A';
-    p("<li>Server Protocol: <b>$server_protocol</b></li>");
-
-    $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    p("<li>Scheme: <b>$scheme</b></li>");
-
-    $port = $_SERVER['SERVER_PORT'] ?? 'N/A';
-    p("<li>Port: <b>$port</b></li>");
-
-    $path = $_SERVER['REQUEST_URI'] ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : 'N/A';
-    p("<li>Path: <b>$path</b></li>");
-
-    $query_string = $_SERVER['QUERY_STRING'] ?? 'N/A';
-    p("<li>Query String: <b>$query_string</b></li>");
-
-    p("</ul>");
+    echo "<pre>";
+    print_r($info);
+    echo "</pre>";
 
     // Extract fragment (anchor) from REQUEST_URI if present
     $fragment = null;
@@ -53,7 +46,7 @@ function url_schema()
 
 function downward_api_info()
 {
-    echo "<h2>Downward API Information</h2>";
+    echo "<h3>Downward API Information</h3>";
 
     $info = [
         'pod_name' => getenv('POD_NAME') ?? 'N/A',
