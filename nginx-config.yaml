@@ -9,20 +9,24 @@ data:
       index index.php index.html;
       root /var/www/html;
 
+      # This location block will handle the /healthz path
       location /healthz {
-        set $do_log 0;
-        try_files $uri $uri/ /index.php?$args;
+        # This is the key line. It prevents any logging for this specific location.
+        access_log off;
+
+        # You still need to proxy the request to php-fpm to get a response
+        fastcgi_pass 127.0.0.1:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
       }
 
       location / {
-        set $do_log 1;
+        # Logging is enabled by default here
         try_files $uri $uri/ /index.php?$args;
       }
 
       location ~ \.php$ {
-        if ($do_log = 0) {
-          access_log off;
-        }
+        # Logging is enabled here
         include fastcgi_params;
         fastcgi_pass 127.0.0.1:9000;
         fastcgi_index index.php;

@@ -35,6 +35,12 @@ spec:
               - path: "annotations"
                 fieldRef:
                   fieldPath: metadata.annotations
+        - name: php-fpm-config
+          configMap:
+            name: php-fpm-config
+            items:
+              - key: www.conf
+                path: www.conf
       containers:
         - name: nginx
           image: nginx:stable-alpine
@@ -61,6 +67,9 @@ spec:
               mountPath: /var/www/html
             - name: podinfo
               mountPath: /etc/podinfo
+            - name: php-fpm-config
+              mountPath: /usr/local/etc/php-fpm.d/www.conf
+              subPath: www.conf
           env:
             - name: NODE_NAME
               valueFrom:
