@@ -43,7 +43,7 @@ spec:
                 path: www.conf
       containers:
         - name: nginx
-          image: nginx:stable-alpine
+          image: nginx:stable-alpine3.21
           ports:
             - containerPort: 80
           volumeMounts:
@@ -70,7 +70,7 @@ spec:
               cpu: "50m"
               memory: "64Mi"
 
-        - image: simpleapp:latest
+        - image: simpleapp:v1
           name: app
           imagePullPolicy: Never
           volumeMounts:

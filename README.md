@@ -8,11 +8,10 @@ This is a simple PHP application running in a Kubernetes pod. It uses Nginx as t
 * minikube
 
 ## Deployment
-1. `minikube start --nodes=1`
-1. `eval $(minikube docker-env)` *
-1. `docker build -t simpleapp .`
-1. `kubectl apply -f configmap.yaml`
-1. `kubectl apply -f pod.yaml`
+1. `minikube start --nodes=2`
+1. `minikube image build -t simpleapp:v1 --all=true .`
+1. `kubectl apply -f fpm-config.yaml -f nginx-config.yaml`
+1. `kubectl apply -f deployment.yaml -f service.yaml`
 1. `echo $(minikube ip):32111 | xclip -selection c`
 1. In your browser paste (`ctrl-v`) and load the page
 
