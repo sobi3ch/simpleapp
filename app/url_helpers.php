@@ -102,3 +102,16 @@ function parsePodInfoFile(string $filePath): array
 
     return $result;
 }
+
+
+function log_extra($path)
+{
+    return [
+        'pod_name' => getenv('POD_NAME'),
+        'path' => $path,
+        'php' => [
+            'PHP_VERSION' => phpversion(),
+            'PHP_OS' => php_uname('s')
+        ]
+    ];
+}

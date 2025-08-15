@@ -14,7 +14,7 @@ $logger = new Logger('app');
 $handler = new StreamHandler('php://stdout', Level::Info);
 $handler->setFormatter(new JsonFormatter());
 $logger->pushHandler($handler);
-$logger->pushProcessor(new WebProcessor());
+// $logger->pushProcessor(new WebProcessor());
 
 // Get the requested URL path
 $request_uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -54,12 +54,12 @@ function request($path)
     // Handle 404 page
     if ($e404) {
         http_response_code(404);
-        $logger->error('404 Not Found', ['path' => $path]);
+        $logger->error('404 Not Found', log_extra($path));
     } else {
         // if not path healthz
         if ($path !== 'healthz') {
             // Log the request
-            $logger->info('Page requested', ['path' => $path]);
+            $logger->info('Page requested', log_extra($path));
         }
 
         // Log successful page requests

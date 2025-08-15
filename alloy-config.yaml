@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy
+  namespace: monitoring
+data:
+  config.alloy: |
+    logging {
+      format = "json"
+    }
+
+    livedebugging {
+      enabled = false
+    }
+
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    loki.source.kubernetes "pods" {
+      targets = discovery.kubernetes.pods.targets
+      forward_to = [loki.process.webapp.receiver]
+    }
+
+    loki.process "webapp" {
+      stage.json {
+        expressions = {
+          log  = "log",
+          path = "context.path",
+          message = "message",
+          level = "level",
+          level_name =  "level_name",
+          channel = "channel",
+          pod_name = "context.pod_name",
+          php_os = "context.php.PHP_OS",
+          php_ver = "context.php.PHP_VERSION",
+        }
+      }
+
+      stage.labels {
+        values = {
+          path = "path",
+          log = "log",
+          http_code = "level",
+          log_level = "level_name",
+          channel = "channel",
+          message = "message",
+          pod_name = "pod_name",
+          php_os = "php_os",
+          php_ver = "php_ver",
+        }
+      }
+
+      stage.static_labels {
+          values = {
+            devops = "Piotr Sobieszczański",
+            company = "allunel",
+          }
+      }
+
+      forward_to = [loki.write.default.receiver]
+    }
+
+
+
+    loki.write "default" {
+      endpoint {
+        url = "http://loki:3100/loki/api/v1/push"
+      }
+    }
